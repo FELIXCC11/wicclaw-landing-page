@@ -866,8 +866,8 @@ button {
   .wc-hero-spacer { height: 15vh; }
 
   .wc-grid-frame {
-    padding-left: 6vw;
-    padding-right: 6vw;
+    padding-left: 5vw;
+    padding-right: 5vw;
   }
 
   .wc-grid-frame::before {
@@ -877,19 +877,27 @@ button {
 
   .wc-hero-title-row {
     display: block;
-    padding-top: 7vh;
-    min-height: 52vh;
+    padding-top: 6vh;
+    min-height: auto;
+    padding-bottom: 0;
   }
 
   .wc-hero-title {
-    font-size: 12vw;
-    margin-bottom: 6vw;
+    font-size: 11vw;
+    margin-bottom: 5vw;
+  }
+
+  /* Marquee inside hero-title-row breaks out of grid padding */
+  .wc-hero-title-row .wc-marquee {
+    margin-left: -5vw;
+    margin-right: -5vw;
+    width: calc(100% + 10vw);
   }
 
   .wc-marquee span { font-size: 10vw; padding: 0 1vw; }
 
   .wc-intro { padding-top: 8vw; padding-bottom: 8vw; }
-  .wc-kicker { max-width: none; font-size: 4vw; }
+  .wc-kicker { max-width: none; font-size: 4.2vw; line-height: 1.55; }
 
   .wc-actions {
     flex-direction: column;
@@ -901,9 +909,8 @@ button {
 
   .wc-manifesto {
     min-height: auto;
+    display: block;
     padding: 16vw 6vw;
-    padding-left: 6vw;
-    padding-right: 6vw;
   }
 
   .wc-circle { display: none; }
@@ -919,8 +926,12 @@ button {
   }
 
   .wc-product-hero {
-    min-height: 82vw;
-    justify-content: center;
+    min-height: auto;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 8vw;
+    padding-bottom: 8vw;
+    gap: 6vw;
   }
 
   .wc-product-hero-media {
@@ -931,7 +942,6 @@ button {
   .wc-floating-note {
     position: static;
     width: auto;
-    margin: 10vw 0 0;
     font-size: 3.6vw;
     padding-left: 4vw;
   }
