@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Content *)",
+      "Read(//mnt/e/Projects/**)",
+      "Bash(npm install *)",
+      "PowerShell(npm *)",
+      "PowerShell(Get-ChildItem \"E:\\\\Projects\\\\wicclaw\" -Recurse -Exclude node_modules,\".next\" | Where-Object { -not $_.PSIsContainer } | Select-Object FullName)",
+      "PowerShell(Get-ChildItem \"E:\\\\Projects\\\\wicclaw\" -Recurse | Where-Object { $_.PSIsContainer -eq $false } | ForEach-Object { $_.FullName.Replace\\(\"E:\\\\Projects\\\\wicclaw\\\\\", \"\"\\) } | Where-Object { $_ -notmatch \"node_modules|\\\\.next\" })",
+      "PowerShell(yarn *)",
+      "PowerShell(pnpm install *)",
+      "PowerShell(pnpm config *)",
+      "PowerShell(pnpm exec *)",
+      "PowerShell(Test-Path \"E:\\\\Projects\\\\wicclaw\\\\node_modules\\\\styled-jsx\\\\index.js\"; \\(Get-Item \"E:\\\\Projects\\\\wicclaw\\\\node_modules\\\\styled-jsx\"\\).GetType\\(\\).Name)",
+      "PowerShell($item = Get-Item \"E:\\\\Projects\\\\wicclaw\\\\node_modules\\\\styled-jsx\" -Force; Write-Host \"LinkType: $\\($item.LinkType\\)\"; Write-Host \"Target: $\\($item.Target\\)\"; Write-Host \"Mode: $\\($item.Mode\\)\")",
+      "PowerShell(Set-Location \"E:\\\\Projects\\\\wicclaw\"; $env:NODE_TLS_REJECT_UNAUTHORIZED=\"0\"; Start-Process -NoNewWindow -FilePath \"pnpm\" -ArgumentList \"dev\" -RedirectStandardOutput \"dev.log\" -RedirectStandardError \"dev-err.log\"; Start-Sleep -Seconds 15; Get-Content \"dev.log\",\"dev-err.log\" -ErrorAction SilentlyContinue | Select-Object -Last 20)",
+      "PowerShell(pnpm dev *)"
+    ]
+  }
+}
