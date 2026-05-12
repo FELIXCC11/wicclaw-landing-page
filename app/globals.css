@@ -123,6 +123,14 @@ button {
 }
 
 /* ─── Logo ────────────────────────────────────────────────────────── */
+.wc-logo-img {
+  height: 32px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+
 .wc-logo {
   display: inline-flex;
   align-items: center;

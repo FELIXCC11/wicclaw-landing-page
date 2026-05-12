@@ -1,25 +1,43 @@
 import type { Metadata } from 'next'
 import './globals.css'
 
-/* IBM Plex Mono is loaded via the CSS @import below to avoid
-   the Google Fonts network fetch that fails behind strict SSL proxies. */
+const baseUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : 'http://localhost:3001'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
   title: 'WicClaw — AI mini boxes for local business',
   description:
     'Plug-and-play AI support for local businesses, controlled through Telegram, powered by a mini device and a master WicClaw control layer.',
   keywords: ['AI', 'automation', 'local business', 'Telegram', 'mini box', 'WicClaw'],
   openGraph: {
     title: 'WicClaw — AI mini boxes for local business',
-    description: 'AI mini boxes for local business automation.',
+    description:
+      'Plug-and-play AI support for local businesses, controlled through Telegram, powered by a mini device and a master WicClaw control layer.',
     siteName: 'WicClaw',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: '/og-img=wicclaw.jpg',
+        width: 1366,
+        height: 768,
+        alt: 'WicClaw — AI mini boxes for local business',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WicClaw',
-    description: 'AI mini boxes for local business automation.',
+    title: 'WicClaw — AI mini boxes for local business',
+    description:
+      'Plug-and-play AI support for local businesses, controlled through Telegram, powered by a mini device and a master WicClaw control layer.',
+    images: ['/og-img=wicclaw.jpg'],
+  },
+  icons: {
+    icon: '/Logo-orange.png',
+    shortcut: '/Logo-orange.png',
+    apple: '/Logo-orange.png',
   },
   robots: { index: true, follow: true },
 }
