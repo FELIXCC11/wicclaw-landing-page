@@ -81,18 +81,13 @@ function Arrow() {
 }
 
 function Logo({ light = false }: { light?: boolean }) {
-  if (!light) {
-    return (
-      /* eslint-disable-next-line @next/next/no-img-element */
-      <img src="/Logo-orange.png" alt="WicClaw" className="wc-logo-img" />
-    )
-  }
   return (
-    <div className="wc-logo" aria-label="WicClaw">
-      <span className="wc-mark" style={{ color: '#fff' }} />
-      <span style={{ color: '#fff' }}>WIC</span>
-      <span style={{ color: '#fff' }}>CLAW</span>
-    </div>
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src="/Logo-orange.png"
+      alt="WicClaw"
+      className={`wc-logo-img${light ? ' wc-logo-img--light' : ''}`}
+    />
   )
 }
 

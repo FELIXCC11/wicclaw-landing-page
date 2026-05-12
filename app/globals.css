@@ -129,6 +129,9 @@ button {
   display: block;
   object-fit: contain;
 }
+.wc-logo-img--light {
+  filter: brightness(0) invert(1);
+}
 
 
 .wc-logo {

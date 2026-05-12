@@ -35,8 +35,8 @@ export const metadata: Metadata = {
     images: ['/og-img=wicclaw.jpg'],
   },
   icons: {
-    icon: '/Logo-orange.png',
-    shortcut: '/Logo-orange.png',
+    icon: '/Favicon.svg',
+    shortcut: '/Favicon.svg',
     apple: '/Logo-orange.png',
   },
   robots: { index: true, follow: true },
