@@ -115,8 +115,8 @@ export function MacMiniPage() {
       <section className="hero">
         <div className="education-ribbon">Meet WICCLAW Box, a compact AI-powered business appliance. <Link href="/shop/buy-wicclaw">Explore <ChevronRight size={12} /></Link></div>
         <div className={`hero-content ${introPlaying ? "intro-playing" : ""}`}>
-          <h1>Your business. With more time.</h1><WicMiniHeroImage eager />
-          <p className="hero-subtitle">Meet WICCLAW. <span>A compact AI-powered device designed to take everyday work off your hands, from bookkeeping and emails to reports and business operations.</span></p><button className="buy-button" onClick={preorder}>Preorder</button><p className="hero-price"><span>$799 hardware price. </span><span>Reserve for $20 toward the balance.</span></p>
+          <h1>WICCLAW Box</h1><WicMiniHeroImage eager />
+          <p className="hero-subtitle">Your business. With more time.</p><button className="buy-button" onClick={preorder}>Preorder</button><p className="hero-price"><span>$799 hardware price. </span><span>Reserve for $20 toward the balance.</span></p>
         </div>
         {introPlaying && <video className="hero-entry" ref={heroVideo} src="/site/wicclaw/hf_20261024_051414_3950d08f-8ed2-4549-a0e9-ca75493928e1.mp4" poster={wicMiniHero} autoPlay muted playsInline preload="auto" onEnded={() => setIntroPlaying(false)} onError={() => setIntroPlaying(false)} aria-label="WICCLAW Box opening animation" />}
         <button className="hero-replay" onClick={() => setIntroPlaying(!introPlaying)}>{introPlaying ? "Skip animation" : "Replay"} <Play size={11} /></button>
