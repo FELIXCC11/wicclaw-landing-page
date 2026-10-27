@@ -1,51 +1,68 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type { Metadata } from "next";
+import "./globals.css";
+import SiteShell from "@/components/SiteShell";
+import "./pages.css";
 
-const baseUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3001'
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000");
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
-  title: 'WicClaw — AI mini boxes for local business',
+  title: "WICCLAW — Your business. With more time.",
   description:
-    'Plug-and-play AI support for local businesses, controlled through Telegram, powered by a mini device and a master WicClaw control layer.',
-  keywords: ['AI', 'automation', 'local business', 'Telegram', 'mini box', 'WicClaw'],
+    "Meet WICCLAW Box, a compact AI-powered business appliance designed to help with bookkeeping, email, reports, and everyday operations.",
+  keywords: [
+    "AI",
+    "automation",
+    "small business",
+    "business assistant",
+    "AI appliance",
+    "WICCLAW",
+  ],
   openGraph: {
-    title: 'WicClaw — AI mini boxes for local business',
+    title: "WICCLAW — Your business. With more time.",
     description:
-      'Plug-and-play AI support for local businesses, controlled through Telegram, powered by a mini device and a master WicClaw control layer.',
-    siteName: 'WicClaw',
-    locale: 'en_US',
-    type: 'website',
+      "A compact AI-powered business appliance designed to help complete everyday work across supported applications.",
+    siteName: "WICCLAW",
+    locale: "en_US",
+    type: "website",
     images: [
       {
-        url: '/og-img=wicclaw.jpg',
-        width: 1366,
-        height: 768,
-        alt: 'WicClaw — AI mini boxes for local business',
+        url: "/og-img=wicclaw.jpg",
+        width: 1728,
+        height: 1117,
+        alt: "WICCLAW Box, a compact AI-powered business appliance",
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'WicClaw — AI mini boxes for local business',
+    card: "summary_large_image",
+    title: "WICCLAW — Your business. With more time.",
     description:
-      'Plug-and-play AI support for local businesses, controlled through Telegram, powered by a mini device and a master WicClaw control layer.',
-    images: ['/og-img=wicclaw.jpg'],
+      "A compact AI-powered business appliance designed to help complete everyday work across supported applications.",
+    images: ["/og-img=wicclaw.jpg"],
   },
   icons: {
-    icon: '/Favicon.svg',
-    shortcut: '/Favicon.svg',
-    apple: '/Logo-orange.png',
+    icon: "/Favicon.svg",
+    shortcut: "/Favicon.svg",
+    apple: "/Logo-orange.png",
   },
-  robots: { index: true, follow: true },
-}
+  robots: { index: process.env.WICCLAW_DEPLOYMENT_STAGE === "production", follow: true },
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <SiteShell>{children}</SiteShell>
+      </body>
     </html>
-  )
+  );
 }

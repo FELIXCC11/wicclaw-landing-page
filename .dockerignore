@@ -1,0 +1,19 @@
+node_modules
+.next*
+.git
+.env*
+!.env.example
+.runtime
+.claude
+website-cloner
+docs
+tests
+*.mp4
+*.png
+*.txt
+dev*.log
+**/*.tsbuildinfo
+!public/**
+
+# Temporary development references must never enter a deployment image.
+public/sites/apple

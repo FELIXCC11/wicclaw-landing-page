@@ -1,14 +1,48 @@
 /.next/
 /out/
 /build
+/dist/
 /node_modules
 .DS_Store
+Thumbs.db
 *.pem
+*.key
 .env*
 !.env.example
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+*.log
+.dev.vars*
+*.local
 .vercel
+/.wrangler/
+/.cache/
+/coverage/
+/playwright-report/
+/test-results/
 *.tsbuildinfo
 next-env.d.ts
+
+# Local account sessions and checkout previews
+/.runtime/
+
+/.next-check/
+/.next-launch/
+
+# Local browser profiles and verification scratch space
+/.edge-*/
+/.codex-verify/
+
+# Local research captures and exported references
+/Screen Recording*.mp4
+/www.apple.com_mac-mini_.png
+/website-inspire*.txt
+/otto-preorder-html.txt
+/html class=*.txt
+/myotto.ai_*.png
+
+# Local-only reference library; not cleared for public distribution
+/public/sites/apple/
+/docs/reference-assets/
+/docs/launch-evidence/**/*.png
+/docs/launch-evidence/*.png
+/docs/preorder-review/
+/docs/restoration/

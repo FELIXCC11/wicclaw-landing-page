@@ -1,0 +1,12 @@
+// Configuration presence only. A successful result is not proof of external service verification.
+const required = ["NEXT_PUBLIC_SITE_URL","STRIPE_SECRET_KEY","STRIPE_WEBHOOK_SECRET","STRIPE_PRICE_WICMINI_CURRENT_DEPOSIT",
+  "STRIPE_PRICE_WICMINI_CURRENT_FULL","STRIPE_PRODUCT_WICMINI_CURRENT","DATABASE_URL","RESEND_API_KEY",
+  "WICCLAW_EMAIL_FROM","WICCLAW_ADMIN_TOKEN","WICCLAW_SHIPPING_COUNTRIES","WICCLAW_DELIVERY_ESTIMATE","WICCLAW_PREORDER_REFUND_POLICY"];
+const gates = ["WICCLAW_CHECKOUT_ENABLED","WICCLAW_ORDER_TERMS_APPROVED","WICCLAW_LEGAL_REVIEW_APPROVED",
+  "WICCLAW_TAX_CONFIGURATION_APPROVED","WICCLAW_SHIPPING_APPROVED","WICCLAW_ASSETS_APPROVED",
+  "WICCLAW_SERVICES_VERIFIED","WICCLAW_TEST_PAYMENTS_VERIFIED","WICCLAW_WEBHOOK_VERIFIED",
+  "WICCLAW_DOMAIN_VERIFIED","WICCLAW_CONFIRMATION_ADMIN_VERIFIED","WICCLAW_LIVE_PAYMENT_APPROVED"];
+const missing = required.filter(key => !process.env[key]?.trim());
+const unverified = gates.filter(key => process.env[key] !== "true");
+console.log(JSON.stringify({configurationOnly:true,missing,unverified,fullPaymentTermsApproved:process.env.WICCLAW_FULL_PAYMENT_TERMS_APPROVED === "true"},null,2));
+if (missing.length || unverified.length) process.exitCode=1;

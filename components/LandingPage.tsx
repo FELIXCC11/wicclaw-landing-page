@@ -1,667 +1,452 @@
-'use client'
+"use client";
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { Arrow } from "./Brand";
 
-/* ─── Brand data ──────────────────────────────────────────────────── */
-const orange = '#ff8800'
-const pale = '#fce7cd'
-
-const heroWords = [
-  'CONNECT', 'PAIR', 'AUTOMATE', 'MONITOR',
-  'REPORT', 'QUOTE', 'SCHEDULE', 'PROMOTE', 'CONTROL', 'SCALE',
-]
-
-const flow = [
-  { title: 'Plug in',       text: 'Power the mini box and connect it to internet.' },
-  { title: 'Scan QR',       text: 'Pair the device to the business owner on Telegram.' },
-  { title: 'Give commands', text: 'Use Telegram to request quotes, promos, reports, or status.' },
-  { title: 'Run safely',    text: 'Validation and permissions check every task before dispatch.' },
-  { title: 'Track results', text: 'Heartbeat, queue state, and task results stay visible.' },
-]
-
-const productCards = [
+const products = [
   {
-    name: 'WICMINI Core',
-    price: 'Early access',
-    components: [
-      'Mini AI agent box',
-      'Telegram bot pairing',
-      'Heartbeat monitoring',
-      'Device registry',
-      'Queue polling',
-      'Agent-first dispatch',
+    name: "WICCLAW Box",
+    label: "A dedicated AI computer for a focused first workflow.",
+    price: "$799 hardware",
+    cta: "Explore WICCLAW Box",
+    features: [
+      "Dedicated WICCLAW Box computer",
+      "Telegram interaction",
+      "Configured agent workflow",
+      "Supported tools and skills",
+      "Reviewable task outputs",
+      "Business-specific setup",
     ],
-    info: 'The starter WicClaw deployment for one local business. Built for simple onboarding, status checks, and daily business workflows from Telegram.',
-    cta: 'Request pilot',
-    images: [
-      '/images/wicmini-hero.png',
-      '/images/wicmini-internals.png',
-      '/images/wicmini-cooling.png',
-    ],
+    info: "Start with one task your team can evaluate, such as a report from approved sources or a review of an accessible queue. Your written offer identifies the device, enabled skill, connections, setup, approvals, and ongoing charges.",
+    images: ["hero", "internals", "cooling"],
   },
   {
-    name: 'WICMINI Fleet',
-    price: 'Multi-device',
-    components: [
-      'Multiple mini devices',
-      'Master control server',
-      'Business workflow routing',
-      'Result tracking',
-      'Fallback device queue',
-      'Remote operations view',
+    name: "WICCLAW Fleet",
+    label: "Dedicated devices for operations that need separation.",
+    price: "Scoped deployment",
+    cta: "Plan your fleet",
+    features: [
+      "Multiple mini devices",
+      "Business and location mapping",
+      "Workflow routing to be scoped",
+      "Result ownership to be defined",
+      "Recovery behavior to be confirmed",
+      "Operational support to be agreed",
     ],
-    info: 'For running several business locations or multiple client deployments from one master control layer.',
-    cta: 'Plan fleet',
-    images: [
-      '/images/wicmini-exploded.png',
-      '/images/wicmini-layers.png',
-      '/images/wicmini-hero.png',
-    ],
+    info: "A Fleet proposal maps each device to the business, location, workload, and people it serves. The plan specifies routing, result ownership, access boundaries, recovery, and support before those features are promised.",
+    images: ["exploded", "layers", "hero"],
   },
-]
-
-const quotes = [
-  'Plug it in, scan once, and the business has an AI operator.',
-  'Telegram is the dashboard. The mini is the worker. The server is the brain.',
-  'Designed for local businesses that need outcomes, not another software login.',
-  'Every command is checked before execution. Control stays visible.',
-  'One mini per business. One control layer for the whole network.',
-]
-
-/* ─── Sub-components ──────────────────────────────────────────────── */
-function Arrow() {
+];
+const steps = [
+  [
+    "Plug in",
+    "Connect WICCLAW Box to power and the internet, then follow the supplied setup instructions.",
+  ],
+  [
+    "Scan QR",
+    "Pair the designated Telegram account with the correct business and device.",
+  ],
+  [
+    "Authorize the work",
+    "Choose one defined workflow and authorize only the service access it needs.",
+  ],
+  [
+    "Give it a task",
+    "Describe the job in ordinary language. The agent uses configured tools for supported steps.",
+  ],
+  [
+    "Review the result",
+    "Review what completed, what could not proceed, and what needs your decision.",
+  ],
+];
+const notes = [
+  [
+    "01 / CONNECTION",
+    "The agent has a computer separate from your laptop.",
+  ],
+  [
+    "02 / SIMPLICITY",
+    "Give supported tasks in natural language through today's paired interface.",
+  ],
+  [
+    "03 / PURPOSE",
+    "Start with a result you can verify. Expand after the first workflow proves useful.",
+  ],
+  [
+    "04 / CONTROL",
+    "Connections and approval points are defined for each workflow.",
+  ],
+  [
+    "05 / SCALE",
+    "Add skills or devices when a real business need justifies them.",
+  ],
+];
+function Product({ product }: { product: (typeof products)[number] }) {
+  const [active, setActive] = useState(0);
   return (
-    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
-      <path
-        d="M16.4181 1.47272L13.7747 1.48207L13.7747 11.9065L2.4068 0.538636L0.538621 2.40681L11.9065 13.7747L1.47271 13.784L1.47271 16.4181H16.4181V1.47272Z"
-        fill="currentColor"
-      />
-    </svg>
-  )
-}
-
-function Logo({ light = false }: { light?: boolean }) {
-  return (
-    /* eslint-disable-next-line @next/next/no-img-element */
-    <img
-      src="/Logo-orange.png"
-      alt="WicClaw"
-      className={`wc-logo-img${light ? ' wc-logo-img--light' : ''}`}
-    />
-  )
-}
-
-function GridFrame({
-  children,
-  className = '',
-  id,
-}: {
-  children?: React.ReactNode
-  className?: string
-  id?: string
-}) {
-  return (
-    <section className={`wc-grid-frame ${className}`} id={id}>
-      {children}
-    </section>
-  )
-}
-
-function SectionBar({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="wc-section-bar">
-      <span className="wc-dot" />
-      <span>{children}</span>
-    </div>
-  )
-}
-
-function ProductCard({ card }: { card: (typeof productCards)[0] }) {
-  const [active, setActive] = useState(0)
-  const imgRef = useRef<HTMLImageElement>(null)
-
-  const switchImage = async (i: number) => {
-    if (i === active) return
-    const { gsap } = await import('gsap')
-    if (imgRef.current) {
-      gsap.to(imgRef.current, {
-        opacity: 0, scale: 1.04, duration: 0.22, ease: 'power2.in',
-        onComplete: () => {
-          setActive(i)
-          gsap.fromTo(
-            imgRef.current,
-            { opacity: 0, scale: 0.97 },
-            { opacity: 1, scale: 1, duration: 0.38, ease: 'power3.out' },
-          )
-        },
-      })
-    } else {
-      setActive(i)
-    }
-  }
-
-  return (
-    <div className="wc-product-card">
-      {/* Image column */}
-      <div className="wc-product-image-block">
-        <div className="wc-product-title">{card.name}</div>
-        <div className="wc-image-stage">
+    <article className="product reveal">
+      <div className="product-visual">
+        <h3 className="product-heading">{product.name}</h3>
+        <div className="product-image">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            ref={imgRef}
-            src={card.images[active]}
-            alt={`${card.name} — view ${active + 1}`}
+            key={active}
+            src={`/images/wicmini-${product.images[active]}.png`}
+            alt={`${product.name}, ${product.images[active]} view`}
+            width="700"
+            height="700"
             loading="lazy"
           />
         </div>
-        <div className="wc-thumbs">
-          {card.images.map((src, i) => (
+        <div className="gallery-controls">
+          <button
+            type="button"
+            onClick={() => setActive((active + 1) % product.images.length)}
+            aria-label={`Next image of ${product.name}`}
+          >
+            ▶
+          </button>
+          {product.images.map((name, index) => (
             <button
-              key={src}
+              key={name}
               type="button"
-              className={`wc-thumb-btn ${i === active ? 'active' : ''}`}
-              onClick={() => switchImage(i)}
-              aria-label={`View ${i + 1}`}
-            />
+              aria-label={`${product.name}: ${name} view`}
+              aria-pressed={active === index}
+              onClick={() => setActive(index)}
+            >
+              <span />
+            </button>
           ))}
+          <span className="gallery-count">0{active + 1} / 03</span>
         </div>
       </div>
-
-      {/* Components column */}
-      <div className="wc-components-block">
-        <div className="wc-column-title">Components</div>
+      <div className="product-features">
+        <h4 className="column-heading">Components</h4>
         <ul>
-          {card.components.map((item) => (
-            <li key={item}>{item}</li>
+          {product.features.map((feature) => (
+            <li key={feature}>{feature}</li>
           ))}
         </ul>
-        <div className="wc-price">{card.price}</div>
+        <div className="product-price">
+          {product.price}
+          <span>{product.label}</span>
+        </div>
       </div>
-
-      {/* Info column */}
-      <div className="wc-info-block">
-        <div className="wc-column-title filled">Info</div>
-        <p>{card.info}</p>
-        <button type="button" className="wc-soft-button">
-          <span>{card.cta}</span>
+      <div className="product-info">
+        <h4 className="product-heading">Info</h4>
+        <p>{product.info}</p>
+        <Link
+          className="product-cta"
+          href={product.name.includes("Core") ? "/pre-order" : "/contact"}
+        >
+          {product.cta}
           <Arrow />
-        </button>
-        <a href="#contact" className="wc-link-row">
-          <span>See deployment flow</span>
+        </Link>
+        <Link className="product-more" href="/how-it-works">
+          See how it works
           <Arrow />
-        </a>
+        </Link>
       </div>
-    </div>
-  )
+    </article>
+  );
 }
 
-/* Split hero title into individually animatable words */
-function HeroTitle() {
-  const lines = ['AI mini boxes,', 'built for']
-  return (
-    <h1 className="wc-hero-title wc-display" aria-label="AI mini boxes, built for">
-      {lines.map((line, li) => (
-        <span key={li} style={{ display: 'block' }}>
-          {line.split(' ').map((word, wi) => (
-            <span key={wi} className="wc-word-wrap">
-              <span className="wc-hero-word">{word}</span>
-            </span>
-          ))}
-        </span>
-      ))}
-    </h1>
-  )
-}
-
-/* ─── Main page component ─────────────────────────────────────────── */
 export default function LandingPage() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const ctxRef = useRef<any>(null)
+  const [playing, setPlaying] = useState(true);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [motionPaused, setMotionPaused] = useState(false);
+  const page = useRef<HTMLDivElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let lenis: any = null
-    let removeMouseMove: (() => void) | null = null
+    // A media request can fail before React hydrates and attaches onError.
+    if (video.current?.error) setVideoFailed(true);
+  }, []);
 
-    const init = async () => {
-      const { gsap } = await import('gsap')
-      const { ScrollTrigger } = await import('gsap/ScrollTrigger')
-      gsap.registerPlugin(ScrollTrigger)
-
-      /* Lenis smooth scroll */
-      const LenisClass = (await import('lenis')).default
-      lenis = new LenisClass({ lerp: 0.08, smoothWheel: true })
-      lenis.on('scroll', ScrollTrigger.update)
-      gsap.ticker.add((time: number) => lenis.raf(time * 1000))
-      gsap.ticker.lagSmoothing(0)
-
-      /* Scroll progress bar */
-      const progressEl = document.querySelector<HTMLElement>('.wc-progress')
-      if (progressEl) {
-        gsap.to(progressEl, {
-          width: '100%',
-          ease: 'none',
-          scrollTrigger: { start: 'top top', end: 'max', scrub: 0 },
-        })
-      }
-
-      /* Custom cursor */
-      const cursor = document.querySelector<HTMLElement>('.wc-cursor')
-      const ring = document.querySelector<HTMLElement>('.wc-cursor-ring')
-      if (cursor && ring) {
-        const onMove = (e: MouseEvent) => {
-          gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.12, ease: 'power2.out' })
-          gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.4, ease: 'power3.out' })
-        }
-        const onEnterLink = () => {
-          cursor.classList.add('is-hovering')
-          ring.classList.add('is-hovering')
-        }
-        const onLeaveLink = () => {
-          cursor.classList.remove('is-hovering')
-          ring.classList.remove('is-hovering')
-        }
-        window.addEventListener('mousemove', onMove)
-        document.querySelectorAll('a, button').forEach((el) => {
-          el.addEventListener('mouseenter', onEnterLink)
-          el.addEventListener('mouseleave', onLeaveLink)
-        })
-        removeMouseMove = () => {
-          window.removeEventListener('mousemove', onMove)
-          document.querySelectorAll('a, button').forEach((el) => {
-            el.removeEventListener('mouseenter', onEnterLink)
-            el.removeEventListener('mouseleave', onLeaveLink)
-          })
-        }
-      }
-
-      if (!containerRef.current) return
-
-      /* All GSAP animations inside a context for clean teardown */
-      ctxRef.current = gsap.context(() => {
-        /* ── Load sequence ────────────────────────────────────── */
-        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-
-        tl.from('.wc-nav', { y: -70, duration: 0.8 }, 0)
-          .from(
-            '.wc-hero-word',
-            { y: '110%', stagger: 0.09, duration: 1, ease: 'power4.out' },
-            0.35,
-          )
-          .from('.wc-marquee', { opacity: 0, duration: 0.5 }, 0.95)
-          .from('.wc-kicker', { opacity: 0, y: 22, duration: 0.7 }, 1.1)
-          .from(
-            '.wc-actions > *',
-            { opacity: 0, y: 14, stagger: 0.12, duration: 0.6 },
-            1.3,
-          )
-
-        /* ── Section bars – slide from left ───────────────────── */
-        gsap.utils.toArray<HTMLElement>('.wc-section-bar').forEach((el) => {
-          gsap.from(el, {
-            x: -80,
-            opacity: 0,
-            duration: 0.65,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: el, start: 'top 88%' },
-          })
-        })
-
-        /* ── Heading rows ─────────────────────────────────────── */
-        gsap.utils.toArray<HTMLElement>('.wc-heading-row').forEach((row) => {
-          const h2 = row.querySelector('h2')
-          const p = row.querySelector('p')
-          if (h2) {
-            gsap.from(h2, {
-              opacity: 0,
-              y: 36,
-              duration: 0.8,
-              ease: 'power3.out',
-              scrollTrigger: { trigger: row, start: 'top 82%' },
-            })
-          }
-          if (p) {
-            gsap.from(p, {
-              opacity: 0,
-              y: 20,
-              duration: 0.7,
-              delay: 0.15,
-              ease: 'power3.out',
-              scrollTrigger: { trigger: row, start: 'top 82%' },
-            })
-          }
-        })
-
-        /* ── Manifesto ────────────────────────────────────────── */
-        gsap.from('.wc-circle', {
-          scale: 0,
-          duration: 1.6,
-          ease: 'power3.out',
-          transformOrigin: 'center center',
-          scrollTrigger: { trigger: '.wc-manifesto', start: 'top 72%' },
-        })
-
-        gsap.utils.toArray<HTMLElement>('.wc-manifesto p').forEach((p, i) => {
-          gsap.from(p, {
-            opacity: 0,
-            y: 30,
-            duration: 0.9,
-            delay: i * 0.2,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: '.wc-manifesto', start: 'top 70%' },
-          })
-        })
-
-        gsap.from('.wc-signature', {
-          opacity: 0,
-          x: -20,
-          duration: 0.7,
-          scrollTrigger: { trigger: '.wc-signature', start: 'top 90%' },
-        })
-
-        /* ── Product hero – parallax ──────────────────────────── */
-        gsap.to('.wc-product-hero-img', {
-          yPercent: -14,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '.wc-product-hero',
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 1.2,
-          },
-        })
-
-        gsap.to('.wc-product-hero-video', {
-          scale: 1.08,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '.wc-product-hero',
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 1.2,
-          },
-        })
-
-        gsap.from('.wc-floating-note', {
-          opacity: 0,
-          x: -30,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: '.wc-product-hero', start: 'top 70%' },
-        })
-
-        /* ── Flow steps – stagger from bottom ────────────────── */
-        gsap.from(gsap.utils.toArray<HTMLElement>('.wc-flow-step'), {
-          y: 70,
-          opacity: 0,
-          stagger: 0.13,
-          duration: 0.85,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: '.wc-flow', start: 'top 78%' },
-        })
-
-        /* ── Product cards – clip-path wipe from bottom ───────── */
-        gsap.utils.toArray<HTMLElement>('.wc-product-card').forEach((card) => {
-          gsap.fromTo(
-            card,
-            { clipPath: 'inset(100% 0 0 0)' },
-            {
-              clipPath: 'inset(0% 0 0 0)',
-              duration: 1.3,
-              ease: 'power4.out',
-              scrollTrigger: { trigger: card, start: 'top 82%' },
-            },
-          )
-        })
-
-        /* ── Quotes bar ───────────────────────────────────────── */
-        gsap.from('.wc-quotes', {
-          opacity: 0,
-          duration: 0.7,
-          scrollTrigger: { trigger: '.wc-quotes', start: 'top 88%' },
-        })
-
-        /* ── Contact ──────────────────────────────────────────── */
-        gsap.from('.wc-contact', {
-          opacity: 0,
-          y: 40,
-          scale: 0.97,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: '.wc-contact', start: 'top 85%' },
-        })
-
-        /* ── Footer ───────────────────────────────────────────── */
-        gsap.from('.wc-footer', {
-          opacity: 0,
-          y: 30,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: '.wc-footer', start: 'top 92%' },
-        })
-      }, containerRef.current)
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setMotionPaused(true);
+      video.current?.pause();
+      setPlaying(false);
     }
-
-    init()
-
-    return () => {
-      removeMouseMove?.()
-      ctxRef.current?.revert()
-      lenis?.destroy()
+  }, []);
+  const toggleVideo = () => {
+    if (!video.current) return;
+    if (video.current.paused)
+      video.current
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => setPlaying(false));
+    else {
+      video.current.pause();
+      setPlaying(false);
     }
-  }, [])
+  };
 
-  /* ─── Markup ────────────────────────────────────────────────────── */
   return (
-    <div ref={containerRef} className="wc-page">
-      {/* Cursor */}
-      <div className="wc-cursor" aria-hidden="true" />
-      <div className="wc-cursor-ring" aria-hidden="true" />
-
-      {/* Scroll progress */}
-      <div className="wc-progress" aria-hidden="true" />
-
-      {/* ── Nav ─────────────────────────────────────────────────── */}
-      <nav className="wc-nav" aria-label="Main navigation">
-        <div className="wc-nav-side" title="Menu" role="button" aria-label="Open menu">
-          <span className="wc-menu-icon" aria-hidden="true" />
-        </div>
-        <div className="wc-nav-main">
-          <div />
-          <div className="wc-nav-center">
-            <Logo />
-          </div>
-          <div className="wc-nav-links">
-            <a href="#flow">How it works</a>
-            <a href="#products">Pilots</a>
-            <a href="#contact">Contact</a>
+    <div ref={page} className={motionPaused ? "motion-paused" : ""}>
+      <section id="top" className="hero grid-section">
+        <div className="hero-space frame" />
+        <div className="hero-title-line">
+          <div className="hero-title-inner frame">
+            <h1 aria-label="Your business. With more time.">
+              Your business. With
+            </h1>
+            <div className="marquee" aria-label="More time for your business">
+              <div className="marquee-track" aria-hidden="true">
+                {[0, 1].map((i) => (
+                  <span key={i}>MORE TIME FOR YOUR BUSINESS, </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-        <div
-          className="wc-nav-end"
-          style={{ color: orange, fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em' }}
-        >
-          AI OS
+        <div className="hero-body frame">
+          <p className="hero-description">
+            _Meet WICCLAW. A compact AI-powered device designed to take everyday work off your hands.
+            <br />From bookkeeping and emails to reports and business operations, it works across supported applications under the permissions you choose.
+          </p>
+          <div className="hero-actions">
+            <Link className="outline-button" href="/pre-order">
+              Explore WICCLAW Box
+              <Arrow />
+            </Link>
+            <Link className="text-link" href="/products">
+              See how it works
+            </Link>
+          </div>
+          <div className="hero-bottom">
+            <span className="eyebrow">SMALL HARDWARE. REAL POSSIBILITIES.</span>
+            <a href="#about" aria-label="Discover WICCLAW">
+              <Arrow down />
+            </a>
+          </div>
         </div>
-      </nav>
-
-      {/* ── Hero spacer ─────────────────────────────────────────── */}
-      <GridFrame className="wc-hero-spacer" />
-
-      {/* ── Hero title + marquee ─────────────────────────────────── */}
-      <GridFrame className="wc-hero-title-row">
-        <HeroTitle />
-        <div className="wc-marquee wc-pixel" aria-label="WicClaw capabilities">
-          <div className="wc-marquee-track">
-            {[...heroWords, ...heroWords, ...heroWords].map((word, i) => (
-              <span key={`${word}-${i}`}>{word},</span>
+      </section>
+      <section id="about" className="manifesto frame">
+        <div className="manifesto-copy reveal">
+          <p>
+            _An answer is useful. <span>Completed steps</span> are more useful.
+            With the right skill and permission, WICCLAW can gather information,
+            work with a supported application, prepare an output, and report what
+            happened. If a sign-in, missing detail, or important decision blocks
+            the task, it should ask rather than guess.
+          </p>
+          <p>
+            Start with one job you can review. <span>Build from there.</span>
+          </p>
+          <div className="signature">_ The WICCLAW system</div>
+        </div>
+        <div className="manifesto-mark" aria-hidden="true">
+          w<span>_</span>
+        </div>
+      </section>
+      <section
+        className="product-story grid-section"
+        aria-label="Meet the WICCLAW Box"
+      >
+        <div className="story-heading frame reveal">
+          <span className="eyebrow">01 / THE HARDWARE</span>
+          <h2>
+            A dedicated place for
+            <br />
+            <span>the work you delegate.</span>
+          </h2>
+        </div>
+        <div className="cinema">
+          {!videoFailed ? (
+            <video
+              ref={video}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              src="/videos/wicmini-demo.mp4"
+              poster="/images/wicmini-hero.png"
+              aria-label="WICCLAW Box product animation"
+              onError={() => setVideoFailed(true)}
+              onPlay={() => setPlaying(true)}
+              onPause={() => setPlaying(false)}
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/images/wicmini-hero.png"
+              alt="WICCLAW Box compact AI agent box"
+            />
+          )}
+          <div className="cinema-note">
+            <span className="eyebrow">WICCLAW BOX / BUSINESS AI APPLIANCE</span>
+            <p>
+              A separate workspace for the agent.
+              <br />
+              Configured around your business.
+              <br />
+              Available while powered and connected.
+            </p>
+          </div>
+          {!videoFailed && (
+            <button
+              type="button"
+              className="video-toggle"
+              onClick={toggleVideo}
+              aria-label={
+                playing ? "Pause product video" : "Play product video"
+              }
+            >
+              {playing ? "Ⅱ Pause" : "▶ Play"}
+            </button>
+          )}
+        </div>
+        <div className="hardware-caption frame">
+          <span>WICCLAW BOX — YOUR AI EMPLOYEE’S DEDICATED COMPUTER.</span>
+          <span>Local tools and connected services depend on your configuration.</span>
+        </div>
+      </section>
+      <section id="flow" className="section-block grid-section">
+        <div className="frame">
+          <div className="section-tab">
+            The WICCLAW Box system<span>02</span>
+          </div>
+          <div className="section-intro reveal">
+            <h2>
+              From instruction
+              <br />
+              to reviewed result.
+            </h2>
+            <p>
+              Pair the right owner, authorize only the services a defined job
+              needs, and describe the outcome. Review what the agent completed,
+              what stopped, and what still needs your decision.
+            </p>
+          </div>
+          <div className="steps">
+            {steps.map(([title, description], i) => (
+              <article className="step reveal" key={title}>
+                <span className="step-number">0{i + 1}</span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                </div>
+                <span className="step-plus" aria-hidden="true">
+                  +
+                </span>
+              </article>
             ))}
           </div>
         </div>
-      </GridFrame>
-
-      {/* ── Intro ───────────────────────────────────────────────── */}
-      <GridFrame className="wc-intro">
-        <p className="wc-kicker">
-          _Plug-and-play AI support for local businesses, controlled through Telegram, powered by a
-          mini device and a master WicClaw control layer.
-        </p>
-        <div className="wc-actions">
-          <a className="wc-outline-button" href="#contact">
-            <span>Try WicMini Pilot</span>
-            <Arrow />
-          </a>
-          <a className="wc-text-link" href="#products">
-            See deployments
-          </a>
-        </div>
-      </GridFrame>
-
-      {/* ── Manifesto ───────────────────────────────────────────── */}
-      <GridFrame className="wc-manifesto">
-        <div className="wc-circle" aria-hidden="true" />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <p>
-            We do not believe in generic AI dashboards. Each WicMini is designed and{' '}
-            <span className="wc-orange-word wc-pixel">paired</span> as a{' '}
-            <span className="wc-orange-word wc-pixel">business agent</span>, giving owners simple
-            control, reliable automation, and visible execution from Telegram.
-          </p>
-          <p style={{ marginTop: '3vw' }}>
-            Do not install another tool.{' '}
-            <span className="wc-orange-word wc-pixel">Plug it in.</span>
-          </p>
-        </div>
-        <div className="wc-signature">
-          <span style={{ color: orange }}>_</span> WicClaw System
-        </div>
-      </GridFrame>
-
-      {/* ── Product hero ────────────────────────────────────────── */}
-      <GridFrame className="wc-product-hero">
-        <div className="wc-floating-note">
-          The PC becomes the mini box: small hardware, always online, remotely monitored, ready for
-          one business or a fleet.
-        </div>
-        <div className="wc-product-hero-media">
-          {/* Background video (place /public/videos/wicmini-demo.mp4) */}
-          <video
-            className="wc-product-hero-video"
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="/images/wicmini-layers.png"
-            aria-hidden="true"
-          >
-            <source src="/videos/wicmini-demo.mp4" type="video/mp4" />
-          </video>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/wicmini-hero.png"
-            alt="WicMini AI agent box — compact, always-on hardware"
-            className="wc-product-hero-img"
-            width={900}
-            height={700}
-          />
-        </div>
-      </GridFrame>
-
-      {/* ── How it works ────────────────────────────────────────── */}
-      <GridFrame>
-        <SectionBar>WicMini system</SectionBar>
-      </GridFrame>
-      <GridFrame className="wc-heading-row">
-        <h2>Business automation, without the software burden.</h2>
-        <p>
-          <strong>WicClaw</strong> combines Telegram control, device heartbeat, queue polling,
-          permissions, and Agent-first dispatch — so the business owner does nothing technical
-          after day one.
-        </p>
-      </GridFrame>
-
-      <section id="flow" className="wc-flow" aria-label="How WicMini works">
-        {flow.map((item, index) => (
-          <div className="wc-flow-step" key={item.title}>
-            <div className="wc-number wc-display">{String(index + 1).padStart(2, '0')}</div>
-            <div>
-              <strong className="wc-pixel">{item.title}</strong>
-              <p>{item.text}</p>
-            </div>
+      </section>
+      <section id="products" className="section-block grid-section">
+        <div className="frame">
+          <div className="section-tab">
+            Find your WICCLAW Box<span>03</span>
           </div>
-        ))}
+          <div className="section-intro reveal">
+            <h2>
+              Start with
+              <br />
+              a useful job.
+            </h2>
+            <p>
+              Choose work your team already understands. Core begins with a
+              focused, reviewable workflow; broader integrations, skills, and
+              multi-device deployments are scoped separately.
+            </p>
+          </div>
+          <div className="products">
+            {products.map((product) => (
+              <Product key={product.name} product={product} />
+            ))}
+          </div>
+        </div>
       </section>
-
-      {/* ── Products ────────────────────────────────────────────── */}
-      <GridFrame>
-        <SectionBar>Deployment options</SectionBar>
-      </GridFrame>
-      <GridFrame className="wc-heading-row">
-        <h2>WicMini pilots: ready to place in the field.</h2>
-        <p>
-          Each deployment is pre-configured for Telegram control, heartbeat monitoring, and
-          Agent-first task dispatch. Choose Core for one business, Fleet for a network.
-        </p>
-      </GridFrame>
-
-      <section id="products" className="wc-products-wrap" aria-label="WicMini products">
-        {productCards.map((card) => (
-          <ProductCard key={card.name} card={card} />
-        ))}
-      </section>
-
-      {/* ── Quotes ──────────────────────────────────────────────── */}
-      <GridFrame>
-        <SectionBar>Field notes</SectionBar>
-      </GridFrame>
-      <section className="wc-quotes" aria-label="WicClaw field notes">
-        <div className="wc-quote-track" aria-hidden="true">
-          {[...quotes, ...quotes, ...quotes].map((quote, index) => (
-            <div className="wc-quote-card" key={`${quote}-${index}`}>
-              <p>&ldquo;{quote}&rdquo;</p>
-              <footer>WicMini concept</footer>
-            </div>
+      <section className="frame home-explore">
+        <div className="section-intro">
+          <h2>
+            Understand
+            <br />
+            how it works.
+          </h2>
+          <p>
+            See what runs on WICCLAW Box, how an instruction becomes supported work,
+            and where people remain in control.
+          </p>
+        </div>
+        <div className="link-grid">
+          {[
+            [
+              "/hardware",
+              "01 / HARDWARE",
+              "Meet WICCLAW Box",
+              "Understand the computer and what still depends on internet services.",
+            ],
+            [
+              "/platform",
+              "02 / PLATFORM",
+              "Inside the system",
+              "Follow a task from instruction through configured tools to a reviewable result.",
+            ],
+            [
+              "/help",
+              "03 / GUIDES",
+              "Make your first move",
+              "Choose a first job and learn what to check when work pauses.",
+            ],
+          ].map(([href, label, title, text]) => (
+            <Link className="editorial-card" href={href} key={href}>
+              <span className="eyebrow">{label}</span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+              <Arrow />
+            </Link>
           ))}
         </div>
       </section>
-
-      {/* ── Contact ─────────────────────────────────────────────── */}
-      <div style={{ padding: '3vw 0', borderBottom: `1px solid ${pale}` }}>
-        <section id="contact" className="wc-contact">
-          <a href="mailto:hello@wicclaw.ai">Contact us</a>
-        </section>
-      </div>
-
-      {/* ── Footer ──────────────────────────────────────────────── */}
-      <footer className="wc-footer" role="contentinfo">
-        <div>
-          <Logo light />
-          <p style={{ marginTop: '1.5vw', opacity: 0.8 }}>
-            One mini. One business. One control layer.
-          </p>
+      <section className="notes-section frame" aria-label="WICCLAW principles">
+        <div className="notes-heading">
+          <span className="eyebrow">BUILT AROUND THE WAY YOU WORK</span>
+          <button
+            type="button"
+            onClick={() => setMotionPaused(!motionPaused)}
+            aria-pressed={motionPaused}
+          >
+            {motionPaused ? "Resume motion ▶" : "Pause motion Ⅱ"}
+          </button>
         </div>
-        <div>
-          <strong>Contact</strong>
-          <br />
-          <a href="mailto:hello@wicclaw.ai">hello@wicclaw.ai</a>
-          <br />
-          Telegram-first onboarding
+        <div className="notes-window">
+          <div className="notes-track">
+            {[0, 1].map((copy) => (
+              <div
+                className="notes-group"
+                key={copy}
+                aria-hidden={copy === 1 ? true : undefined}
+              >
+                {notes.map(([title, text]) => (
+                  <article className="note" key={title}>
+                    <p>{text}</p>
+                    <footer>
+                      <span>↗</span>
+                      {title}
+                    </footer>
+                  </article>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
-        <div>
-          <strong>System</strong>
-          <br />
-          Plug in
-          <br />
-          Scan QR
-          <br />
-          AI works
+      </section>
+      <section id="contact" className="contact frame reveal">
+        <Link href="/pre-order">
+          <span>What work would you hand off first?</span>
+          <Arrow />
+        </Link>
+        <div className="contact-meta">
+          <span>Tell us the recurring task, tools, and result you would need to trust.</span>
+          <a href="mailto:hello@wicclaw.ai">hello@wicclaw.ai ↗</a>
         </div>
-      </footer>
-      <div className="wc-footer-bottom">
-        <span>© {new Date().getFullYear()} WicClaw. All rights reserved.</span>
-        <span>Built for local business.</span>
-      </div>
+      </section>
     </div>
-  )
+  );
 }
