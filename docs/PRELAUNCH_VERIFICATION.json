@@ -1,0 +1,23 @@
+{
+  "origin": "https://wicclaw.it",
+  "time": "2026-11-23T08:39:04.974Z",
+  "checks": [
+    "Three public routes render without overflow at 1920px",
+    "Three public routes render without overflow at 1440px",
+    "Three public routes render without overflow at 1280px",
+    "Three public routes render without overflow at 1024px",
+    "Three public routes render without overflow at 768px",
+    "Three public routes render without overflow at 430px",
+    "Three public routes render without overflow at 375px",
+    "Old marketing, shopping and nested preorder routes redirect",
+    "Privileged endpoints deny unauthenticated access; payment routes closed",
+    "Waitlist UI stores one real database record; duplicate retry is idempotent; no false email verification",
+    "Server rejects invalid email, missing consent, honeypot, unsupported selections, large bodies, malformed JSON and foreign origins",
+    "Four demo steps retain answers; UI and retries preserve all selections in one database record",
+    "Submission failure is visible and retains entered answers",
+    "Reduced motion keeps mountain visible and disables animation",
+    "Mountain and bird canvas animates in normal motion mode",
+    "Persistent rate limit rejects excessive submissions with retry guidance",
+    "No browser JavaScript errors"
+  ]
+}

@@ -22,7 +22,7 @@ try {
    const response=await page.goto(origin+route,{waitUntil:'networkidle'});assert.equal(response.status(),200);
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Overflow ${route} ${width}`);
    assert.equal(await page.locator('h1').count(),1);
-   const frame=page.frames().find(f=>f.url().includes('landscape.html'));assert.ok(frame);
+   const frame=page.frames().find(f=>f.url().includes('/prelaunch/landscape'));assert.ok(frame);
    assert.ok(await frame.locator('#mountain').evaluate(img=>img.complete&&img.naturalWidth>0));
    await page.screenshot({path:`${evidence}/${route==='/'?'home':route.slice(1)}-${width}.png`,fullPage:true});
   }
@@ -57,8 +57,8 @@ try {
  const saved=await db.query('SELECT form_data FROM prelaunch_demo_requests WHERE email=$1',[demoEmail]);assert.equal(saved.rowCount,1);assert.deepEqual(saved.rows[0].form_data.workflows,demo.workflows);assert.deepEqual(saved.rows[0].form_data.tools,demo.tools.slice().sort());
  checks.push('Four demo steps retain answers; UI and retries preserve all selections in one database record');
  await page.goto(origin+'/pre-order');await page.route('**/api/leads',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Service temporarily unavailable.'})}));await page.getByLabel('Email address').fill(email);await page.getByRole('checkbox').check();await page.getByRole('button',{name:'JOIN THE WAITLIST'}).click();await page.locator('.launch-error').waitFor();assert.equal(await page.getByLabel('Email address').inputValue(),email);await page.unroute('**/api/leads');checks.push('Submission failure is visible and retains entered answers');
- await page.emulateMedia({reducedMotion:'reduce'});await page.goto(origin+'/');const frame=page.frames().find(f=>f.url().includes('landscape.html'));assert.equal(await frame.locator('canvas').evaluate(el=>getComputedStyle(el).display),'none');checks.push('Reduced motion keeps mountain visible and disables animation');
- await page.emulateMedia({reducedMotion:'no-preference'});await page.reload();const animated=page.frames().find(f=>f.url().includes('landscape.html'));await page.waitForTimeout(200);const before=await animated.locator('canvas').evaluate(el=>el.toDataURL());await page.waitForTimeout(250);assert.notEqual(await animated.locator('canvas').evaluate(el=>el.toDataURL()),before);checks.push('Mountain and bird canvas animates in normal motion mode');
+ await page.emulateMedia({reducedMotion:'reduce'});await page.goto(origin+'/');const frame=page.frames().find(f=>f.url().includes('/prelaunch/landscape'));assert.equal(await frame.locator('canvas').evaluate(el=>getComputedStyle(el).display),'none');checks.push('Reduced motion keeps mountain visible and disables animation');
+ await page.emulateMedia({reducedMotion:'no-preference'});await page.reload();const animated=page.frames().find(f=>f.url().includes('/prelaunch/landscape'));await page.waitForTimeout(200);const before=await animated.locator('canvas').evaluate(el=>el.toDataURL());await page.waitForTimeout(250);assert.notEqual(await animated.locator('canvas').evaluate(el=>el.toDataURL()),before);checks.push('Mountain and bird canvas animates in normal motion mode');
  let limited=false;for(let i=0;i<12;i++){const r=await post(waitlist);if(r.status()===429){limited=true;assert.equal(r.headers()['retry-after'],'600');break;}}assert.ok(limited);checks.push('Persistent rate limit rejects excessive submissions with retry guidance');
  assert.deepEqual(errors,[]);checks.push('No browser JavaScript errors');
  fs.writeFileSync(`${evidence}/results.json`,JSON.stringify({origin,time:new Date().toISOString(),checks},null,2));console.log(JSON.stringify({status:'VERIFIED',checks},null,2));

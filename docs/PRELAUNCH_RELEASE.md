@@ -37,3 +37,13 @@ The supplied mountain HTML is preserved at the repository root. `scripts/extract
 `scripts/verify-prelaunch.mjs` runs Chromium at 1920, 1440, 1280, 1024, 768, 430 and 375 pixels. It checks the three pages, overflow, mountain loading, legacy redirects, protected endpoints, both real forms, persisted data, duplicate retries, invalid submissions, error recovery, reduced motion, active animation, and rate limiting. It requires a database connection and `QA_ORIGIN`; screenshots and results default to ignored `.runtime/prelaunch-qa`.
 
 Unit/route tests include syntax validation, consent, spam rejection, preserving demo selections, and a real handler test proving unconfigured storage returns 503. The existing commerce/account/payment suites remain part of verification. Next build, lint, type checks, OpenNext packaging and Wrangler dry-run are required before push. Production is verified separately after the automatic GitHub deployment; a successful push alone is not deployment evidence.
+
+## Verified production release — 2026-11-23
+
+Application commit: 812444e5d1e1be2764daf0e5e24f8258ec89823b. Automatic build: 8d9e31c2-b2cd-4e5f-9c0d-05c66a8b89c3. Worker version: da9c815d-62ef-413a-91d9-57e7897b3151. GitHub's Workers Builds check completed successfully and Cloudflare reported this version at 100% traffic with the encrypted lead database secret.
+
+VERIFIED: all 17 browser/functional checks ran against https://wicclaw.it/; see PRELAUNCH_VERIFICATION.json. Both forms persisted in production PostgreSQL; duplicates produced one record. Synthetic records were removed after assertions. All seven widths passed, reduced-motion animation was disabled, normal animation ran, and there were no browser JavaScript errors. Canonicals point to the production domain; homepage is indexable; the sitemap contains four public URLs. Direct RSC visits to old marketing/shop pages also redirect.
+
+BLOCKED: sending and email ownership verification require a configured, verified provider. No email delivery, verified address, or private checkout link is claimed.
+
+The verification script accepts Cloudflare's extensionless redirect for the landscape HTML. This test-only correction and this evidence update do not change the deployed application behavior.
