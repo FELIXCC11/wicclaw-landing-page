@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { pages } from "@/data/pages";
 import { guides, guidePath } from "@/data/guides";
+import { prelaunchEnabled, prelaunchPages } from "@/lib/prelaunch/config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base =
@@ -8,7 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     (process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000");
-  const paths = [
+  const paths = prelaunchEnabled ? prelaunchPages : [
     "/",
     ...pages.map((page) => `/${page.slug}`),
     "/help",

@@ -6,6 +6,11 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "upload_source_maps": true,
   "workers_dev": true,
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://wicclaw.it",
+    "WICCLAW_DEPLOYMENT_STAGE": "production",
+    "DATABASE_SSL": "true"
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"

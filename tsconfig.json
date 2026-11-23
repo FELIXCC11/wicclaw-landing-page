@@ -32,12 +32,14 @@
     "**/*.ts",
     "**/*.tsx",
     ".next-check/types/**/*.ts",
+    ".next-launch/types/**/*.ts",
     ".next/types/**/*.ts",
     "next-env.d.ts",
-    ".next-launch/types/**/*.ts"
+    ".next-review/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
+    ".runtime",
     "website-cloner"
   ]
 }

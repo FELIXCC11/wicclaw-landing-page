@@ -5,8 +5,8 @@
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build && opennextjs-cloudflare build --skipNextBuild && node scripts/prepare-cloudflare-assets.mjs",
-    "build:next": "next build",
+    "build": "node scripts/build-next.mjs && opennextjs-cloudflare build --skipNextBuild && node scripts/prepare-cloudflare-assets.mjs",
+    "build:next": "node scripts/build-next.mjs",
     "preview:cloudflare": "opennextjs-cloudflare preview",
     "deploy": "pnpm run build && wrangler deploy",
     "start": "next start",
@@ -36,6 +36,7 @@
     }
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@types/node": "^20",
     "@types/pg": "^8.23.1",
     "@types/react": "^19",

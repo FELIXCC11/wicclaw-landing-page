@@ -47,3 +47,5 @@ next-env.d.ts
 /docs/launch-evidence/*.png
 /docs/preorder-review/
 /docs/restoration/
+/.next-review/
+/worker-configuration.d.ts

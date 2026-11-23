@@ -8,7 +8,7 @@ try {
   await client.query("BEGIN");
   await client.query("SELECT pg_advisory_xact_lock(87241923)");
   await client.query("CREATE TABLE IF NOT EXISTS wicclaw_migrations (name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())");
-  for (const name of ["001_preorders.sql","002_shop_accounts.sql","003_checkout_launch.sql"]) {
+  for (const name of ["001_preorders.sql","002_shop_accounts.sql","003_checkout_launch.sql","004_prelaunch_leads.sql"]) {
     if ((await client.query("SELECT name FROM wicclaw_migrations WHERE name=$1",[name])).rowCount) continue;
     await client.query(await readFile(new URL("../db/"+name,import.meta.url),"utf8"));
     await client.query("INSERT INTO wicclaw_migrations (name) VALUES ($1)",[name]);

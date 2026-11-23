@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>WICCLAW — Animated ASCII Mountain & Birds</title>
+<style>
+:root{--beige:#EDE4D7}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--beige)}
+.hero{width:100%;min-height:clamp(440px,53vw,850px);display:flex;align-items:end;overflow:hidden;background:var(--beige);position:relative}
+#mountain{display:block;width:100%;height:auto;max-height:93vh;object-fit:contain;object-position:bottom;pointer-events:none}
+canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+@media (max-width:700px){.hero{min-height:370px}#mountain{width:155%;max-width:none;transform:translateX(-22%);}}
+@media(prefers-reduced-motion:reduce){canvas{display:none}}
+.hero{height:100vh;min-height:0}#mountain{max-height:none;width:145%;max-width:none;flex-shrink:0;transform:translateX(-20%)}@media(max-width:700px){.hero{min-height:0}#mountain{width:180%;transform:translateX(-35%)}}</style></head>
+<body><main class="hero" aria-label="Animated black and orange ASCII mountain with six birds flying across a beige sky"><img id="mountain" alt="Panoramic code-textured mountain ridge" src="/prelaunch/mountain.png"/><canvas id="code-waves" aria-hidden="true"></canvas></main>
+<script>
+(() => {
+  'use strict';
+  const hero = document.querySelector('.hero');
+  const image = document.getElementById('mountain');
+  const canvas = document.getElementById('code-waves');
+  const ctx = canvas.getContext('2d', {alpha:true});
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const maskCanvas = document.createElement('canvas');
+  const maskContext = maskCanvas.getContext('2d');
+  let width=1, height=1, scale=1, raf=0, active=false, cachedRect={x:0,y:0,w:1,h:1};
+  let elapsed=0, previous=0, lastDraw=0;
+  const CYCLE = 30; // Six birds fly across once every 30 seconds.
+  const birds = [
+    {dx:0,   dy:0,   size:1.0, phase:0.1},
+    {dx:-44, dy:25,  size:0.80,phase:1.9},
+    {dx:-82, dy:-14, size:0.88,phase:3.3},
+    {dx:-123,dy:43,  size:0.77,phase:0.9},
+    {dx:-165,dy:8,   size:0.93,phase:2.2},
+    {dx:-206,dy:31,  size:0.72,phase:4.4},
+  ];
+  const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
+  const glyphs={};
+  for(const color of ['#FFF1DC','#FE764E','#F2C7A5']) for(const char of ['/',String.fromCharCode(92),'+']) {
+    const sprite=document.createElement('canvas');sprite.width=16;sprite.height=16;
+    const paint=sprite.getContext('2d');paint.font='11px ui-monospace,Consolas,monospace';paint.fillStyle=color;paint.fillText(char,1,12);glyphs[color+char]=sprite;
+  }
+  function resize() {
+    const r=hero.getBoundingClientRect();
+    width=Math.max(1,r.width);height=Math.max(1,r.height);
+    scale=Math.min(window.devicePixelRatio||1,1.5);
+    canvas.width=Math.round(width*scale);canvas.height=Math.round(height*scale);
+    ctx.setTransform(scale,0,0,scale,0,0);
+    maskCanvas.width=canvas.width;maskCanvas.height=canvas.height;
+    maskContext.setTransform(scale,0,0,scale,0,0); cachedRect=imageRect(); const maskRect=cachedRect; if(image.complete && image.naturalWidth)maskContext.drawImage(image,maskRect.x,maskRect.y,maskRect.w,maskRect.h);
+  }
+  function imageRect() {
+    const a=image.getBoundingClientRect(), b=hero.getBoundingClientRect();
+    return {x:a.left-b.left,y:a.top-b.top,w:a.width,h:a.height};
+  }
+  function mountainMotion(seconds) {
+    // Code-line particles travel through the ridges; mountain silhouette stays still.
+    const r=cachedRect;
+    ctx.clearRect(0,0,width,height);
+    ctx.save();
+    const gap=clamp(width/100,12,18);
+    const rows=Math.round(clamp(height/26,12,36));
+    ctx.font=`${clamp(width/150,8,11)}px ui-monospace, SFMono-Regular, Consolas, monospace`;
+    for(let j=0;j<rows;j++) {
+      const yBase=r.y+r.h*(.19+j/rows*.81);
+      if(yBase<0||yBase>height+12)continue;
+      const offset=((seconds*10+j*13)%gap);
+      for(let x=-20+offset;x<width+20;x+=gap) {
+        const u=x/Math.max(width,1);
+        const longWave=Math.sin(u*13-seconds*.40-j*.13);
+        const fineWave=Math.sin(u*31-seconds*.65+j*.31);
+        const yy=yBase+longWave*3.0+fineWave*1.1;
+        const shimmer=(Math.sin(u*16-seconds*.43+j*.16)+1)*.5;
+        const selector=(Math.floor(x/gap)+j*7)%19;
+        if(selector>9)continue;
+        const opacity=.10+shimmer*.19;
+        ctx.globalAlpha=opacity;
+        ctx.fillStyle=(j%7===0)?'#FFF1DC':(j%3===0)?'#FE764E':'#F2C7A5';
+        if(selector===2||selector===7||selector===9)ctx.drawImage(glyphs[ctx.fillStyle.toUpperCase()+(selector===2?'/':selector===7?String.fromCharCode(92):'+')],x,yy-12);
+        else ctx.fillRect(x,yy,1.5+shimmer*3,.8);
+      }
+    }
+    // A handful of long, soft, slowly sweeping strands suggest flowing ASCII data.
+    for(let band=0;band<5;band++){
+      ctx.globalAlpha=.095;
+      ctx.strokeStyle=band%2?'#FFF2DB':'#FE764E';
+      ctx.lineWidth=.85;
+      ctx.setLineDash([2,9+band*3]);
+      ctx.lineDashOffset=-seconds*(4+band*1.2);
+      ctx.beginPath();
+      for(let x=0;x<=width+12;x+=12){
+        const y=r.y+r.h*(.45+band*.105)+Math.sin(x/width*12-seconds*.28+band)*11;
+        if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    ctx.restore();
+    // Mask ONLY the texture layer to the actual mountain's transparent pixels.
+    
+    ctx.save();ctx.globalCompositeOperation='destination-in';
+    ctx.drawImage(maskCanvas,0,0,width,height);
+    ctx.restore();
+  }
+  function bird(x,y,s,wing) {
+    // Hand-drawn ASCII wings built from animated / and \\ strokes.
+    const span=clamp(width/90,9,16)*s;
+    const rise=(4+Math.sin(wing)*6)*s;
+    ctx.beginPath();
+    ctx.moveTo(x-span,y-rise);
+    ctx.lineTo(x-span*.35,y-rise*.27);
+    ctx.lineTo(x,y+1*s);
+    ctx.lineTo(x+span*.35,y-rise*.27);
+    ctx.lineTo(x+span,y-rise);
+    ctx.stroke();
+    ctx.fillRect(x-1*s,y,2*s,1.7*s);
+  }
+  function drawBirds(seconds) {
+    // Whole flock resets from the left together exactly every 30 seconds.
+    const progress=(seconds%CYCLE)/CYCLE;
+    const groupX=-40+progress*(width+330);
+    const groupY=height*.175+Math.sin(seconds*.26)*height*.018;
+    ctx.save();ctx.strokeStyle='#191716';ctx.fillStyle='#191716';
+    ctx.lineWidth=clamp(width/900,1.3,2.1);ctx.lineCap='round';ctx.lineJoin='round';
+    birds.forEach((b,i)=>{
+      const x=groupX+b.dx*(width/1450+.35);
+      const y=groupY+b.dy*(height/750+.32)+Math.sin(seconds*.8+i)*3;
+      if(x<-30||x>width+30)return;
+      ctx.globalAlpha=.79+(i%3)*.07;
+      bird(x,y,b.size,seconds*3.7+b.phase);
+    });
+    ctx.restore();
+  }
+  function frame(now) {
+    if(!active)return;
+    const delta=previous?Math.min((now-previous)/1000,.05):0;
+    previous=now;elapsed+=delta;
+    if(now-lastDraw<50){raf=requestAnimationFrame(frame);return;}lastDraw=now;mountainMotion(elapsed);
+    drawBirds(elapsed);
+    raf=requestAnimationFrame(frame);
+  }
+  function start() {
+    if(active||reduce.matches||document.hidden)return;
+    active=true;previous=0;raf=requestAnimationFrame(frame);
+  }
+  function stop() {
+    active=false;cancelAnimationFrame(raf);ctx.clearRect(0,0,width,height);
+  }
+  new ResizeObserver(resize).observe(hero);
+  image.addEventListener('load',()=>{resize();start()});
+  reduce.addEventListener('change',()=>reduce.matches?stop():start());
+  document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
+  if(image.complete){resize();start()}
+})();
+</script></body></html>
