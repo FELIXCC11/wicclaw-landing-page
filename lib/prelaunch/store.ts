@@ -8,7 +8,11 @@ export function leadDatabase() {
   const connectionString=process.env.WICCLAW_LEADS_DATABASE_URL||process.env.DATABASE_URL;
   if (!connectionString) throw new Error("Lead storage is not configured");
   // Per-request connections are compatible with Workers' request I/O ownership.
-  return new Pool({connectionString,max:1,connectionTimeoutMillis:5000,statement_timeout:8000,ssl:process.env.DATABASE_SSL==="true"?{rejectUnauthorized:true}:undefined});
+  const pool=new Pool({connectionString,max:1,connectionTimeoutMillis:5000,statement_timeout:8000,ssl:process.env.DATABASE_SSL==="true"?{rejectUnauthorized:true}:undefined});
+  // pg emits idle-socket errors separately from query rejections. Handle them
+  // without allowing the runtime to print the attached connection/client data.
+  pool.on("error",()=>console.error("Lead database idle connection unavailable"));
+  return pool;
 }
 export async function saveLead(db:Pool, lead:Lead, network:string) {
   const window=Math.floor(Date.now()/600000);
